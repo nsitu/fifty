@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>Video Playback Proof of Concept</title>
+    <script>
+        // Cache object to store video elements by their source
+        const videoCache = {};
+
+        function loadVideo(src) {
+            if (videoCache[src]) {
+                console.log(`Using cached video element for source: ${src}`);
+                return videoCache[src];
+            }
+
+            const video = document.createElement('video');
+            video.src = src;
+            video.loop = true;
+            video.muted = true;
+            video.setAttribute("playsinline", ""); // Ensures inline playback on iOS devices
+
+
+            // Append video to the body for visibility
+            document.body.appendChild(video);
+
+
+            videoCache[src] = video;
+            console.log(`Created and cached new video element for source: ${src}`);
+            return video;
+        }
+
+        function setupVideos() {
+            loadVideo('crosswalk.mp4');
+        }
+
+        function playAllVideos() {
+            Object.values(videoCache).forEach(video => {
+                if (video.paused) {
+                    video.play()
+                        .catch(error => console.error("Failed to play video: " + video.src, error));
+                }
+            });
+        }
+    </script>
+</head>
+
+<body onload="setupVideos()">
+    <h1>Video Playback Test</h1>
+    <button
+        id="playButton"
+        onclick="playAllVideos()"
+    >Play Videos</button>
+
+    <!-- Optionally display videos directly in the body for testing -->
+    <!-- <video src="https://www.example.com/path/to/your/video.mp4" controls playsinline muted></video> -->
+</body>
+
+</html>
